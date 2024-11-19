@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}News Portal{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.5/dist/alpine.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        #like-list-popup {
+            display: none;
+        }
+
+        #like-list-popup.show {
+            display: flex;
+        }
+    </style>
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+</head>
+<body class="flex flex-col min-h-screen bg-gray-100">
+<!-- Unified Header -->
+<header class="bg-gradient-to-r from-gray-800 via-blue-600 to-gray-800 text-white">
+    <div class="max-w-7xl mx-auto flex items-center justify-center relative py-4 px-6">
+        <!-- Centered Title -->
+        <h1 class="text-4xl font-extrabold text-center text-white">
+            <span class="bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
+                News Portal
+            </span>
+        </h1>
+    </div>
+</header>
+
+
+<!-- Second Header-->
+<nav class="bg-gray-700 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto flex justify-between items-center py-4 px-4">
+        <!-- Main Navigation Links -->
+        <div class="flex space-x-6">
+            <a href="/home" class="text-lg font-medium hover:text-blue-300 transition-colors duration-300">Home</a>
+
+            {% for category in categories %}
+                <a href="/category/{{ category.id }}" class="text-lg font-medium hover:text-blue-100 transition-colors duration-300">{{ category.name }}</a>
+            {% endfor %}
+            <a href="{{ path('weather_index') }}"
+               class="text-lg font-medium text-blue-300 hover:text-blue-700 transition-colors duration-300">
+                Weather
+            </a>
+        </div>
+
+        <!-- Authentication Links (Login/Logout, Register, Admin) -->
+        <div class="flex space-x-4">
+            {% if app.user %}
+                <!-- If the user is logged in -->
+                {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <!-- Show Admin link if the user has the ROLE_ADMIN -->
+                    <div class="group relative">
+                        <a href="#" class="text-lg font-medium hover:text-blue-300 transition-colors duration-300">
+                            Admin
+                        </a>
+                        <!-- Dropdown Menu -->
+                        <div class="absolute hidden group-hover:block bg-white shadow-md border rounded-md w-48">
+                            <a href="/admin/create-article" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition-colors duration-300">
+                                Create
+                            </a>
+                            <a href="/admin/update-delete-article" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition-colors duration-300">
+                                Update and Delete
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+                <a href="{{ path('app_profile', {'id': app.user.id}) }}" class="text-lg font-medium hover:text-blue-300 transition-colors duration-300">Profile</a>
+                <a href="/logout" class="text-lg font-medium hover:text-blue-300 transition-colors duration-300">Logout</a>
+            {% else %}
+                <!-- If the user is not logged in -->
+                <a href="/register" class="text-lg font-medium hover:text-blue-300 transition-colors duration-300">Register</a>
+                <a href="/login" class="text-lg font-medium hover:text-blue-300 transition-colors duration-300">Login</a>
+            {% endif %}
+        </div>
+
+    </div>
+</nav>
+
+<!-- Logged in User's Username Display Below Header -->
+<div class="max-w-8xl py-2 px-4">
+    <div class="flex justify-end">
+        {% if app.user %}
+            <p class="text-lg font-semibold text-gray-700">Logged in as: {{ app.user.username }}</p>
+        {% else %}
+            <p class="text-lg font-semibold text-gray-700">You're not logged in.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% if app.request.get('_route') == 'app_article' %}
+    <h1 class="text-3xl font-bold mb-6 text-center">Articles</h1>
+    <hr class="border-t-2 border-gray-300 mb-6">
+{% endif %}
+
+{% block body %}
+{% endblock %}
+
+
+<!-- Main Content Wrapper -->
+<main class="flex-grow">
+
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white mt-10">
+    <div class="max-w-7xl mx-auto py-8 px-4">
+        <div class="flex justify-center space-x-6">
+            <a href="https://github.com/MarkoTkalec321" target="_blank" class="text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="h-6 w-6" viewBox="0 0 24 24">
+                    <path d="M12 .5c-6.627 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.11.793-.26.793-.577v-2.234c-3.338.726-4.042-1.61-4.042-1.61-.546-1.386-1.333-1.755-1.333-1.755-1.091-.745.082-.729.082-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.774.418-1.305.76-1.605-2.665-.303-5.466-1.334-5.466-5.933 0-1.31.465-2.38 1.236-3.22-.124-.303-.536-1.524.118-3.176 0 0 1.01-.323 3.3 1.23a11.52 11.52 0 0 1 3-.403c1.02.004 2.045.138 3 .403 2.29-1.553 3.3-1.23 3.3-1.23.654 1.653.242 2.874.118 3.176.77.84 1.236 1.91 1.236 3.22 0 4.609-2.805 5.625-5.475 5.922.429.368.812 1.096.812 2.207v3.293c0 .319.193.69.8.573 4.769-1.589 8.2-6.084 8.2-11.386 0-6.627-5.373-12-12-12z"></path>
+                </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/marko-tkalec-054508247/" target="_blank" class="text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="h-6 w-6" viewBox="0 0 24 24">
+                    <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.2c-.97 0-1.5-.79-1.5-1.8s.53-1.8 1.5-1.8 1.5.79 1.5 1.8-.53 1.8-1.5 1.8zm13.5 10.2h-3v-4.8c0-1.15-.02-2.63-1.6-2.63-1.6 0-1.84 1.25-1.84 2.54v4.89h-3v-9h2.88v1.23h.04c.4-.76 1.4-1.56 2.88-1.56 3.07 0 3.63 2.02 3.63 4.65v4.68z"></path>
+                </svg>
+            </a>
+        </div>
+        <p class="text-center text-sm mt-4">Copyright @ 2024 Marko Tkalec</p>
+    </div>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const showLikeListBtn = document.getElementById('show-like-list');
+        const closePopupBtn = document.getElementById('close-popup');
+        const likeListPopup = document.getElementById('like-list-popup');
+
+        if (showLikeListBtn) {
+            showLikeListBtn.addEventListener('click', function() {
+                likeListPopup.classList.add('show');
+            });
+        }
+
+        if (closePopupBtn) {
+            closePopupBtn.addEventListener('click', function() {
+                likeListPopup.classList.remove('show');
+            });
+        }
+    });
+</script>
+</body>
+</html>

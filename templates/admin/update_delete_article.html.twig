@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mx-auto p-6 bg-white shadow-lg rounded-lg max-w-lg">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800 text-center">Manage Articles</h1>
+
+        <!-- Flash message area -->
+        {% for message in app.flashes('success') %}
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mt-4 mb-4 text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for article in articles %}
+            <div class="mb-6 p-6 bg-gray-100 rounded-lg shadow">
+                <!-- Display article title -->
+                <h2 class="text-xl font-semibold mb-4">{{ article.title }}</h2>
+
+                <!-- Start the form for Update and Delete actions -->
+                <div class="flex justify-between items-center">
+
+                    <!-- Update button -->
+                    <form method="post" action="{{ path('app_admin_update_article', {'id': article.id}) }}" class="inline-block">
+                        <input type="hidden" name="article_id" value="UPDATE">
+                        <button type="submit" class="py-2 px-4 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:outline-none">
+                            Update
+                        </button>
+                    </form>
+
+                    <!-- Delete button -->
+                    <form method="post" action="{{ path('app_admin_delete_article', {'id': article.id}) }}" class="inline-block">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

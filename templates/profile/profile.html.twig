@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mx-auto my-8 p-6">
+        <h1 class="text-3xl font-bold mb-4">Profile</h1>
+
+        <!-- User Data -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+            <h2 class="text-2xl font-semibold">User Profile</h2>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Created At:</strong> {{ user.createdAt|date('d.m.Y. H:i:s') }}</p>
+        </div>
+
+        <!-- Saved Articles -->
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">Saved Articles</h2>
+
+            {% if savedArticles is empty %}
+                <p>No saved articles.</p>
+            {% else %}
+                <div class="space-y-4">
+                    {% for savedArticle in savedArticles %}
+                        <div class="border p-4 mb-4 flex justify-between items-center">
+                            <div>
+                                <h4>{{ savedArticle.article.title }}</h4>
+                                <p>Author: {{ savedArticle.article.author }}</p>
+                            </div>
+                            <div class="flex space-x-4 ml-auto">
+                                <!-- Read More Button -->
+                                <form action="{{ path('app_article_show', {'id': savedArticle.article.id}) }}" method="get">
+                                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                                        Read More
+                                    </button>
+                                </form>
+
+                                <!-- Undo Save Button -->
+                                <form action="{{ path('app_profile_undo_save', {'userId': app.user.id, 'articleId': savedArticle.article.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('undo_save' ~ savedArticle.article.id) }}">
+                                    <button type="submit" class="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors duration-300">
+                                        Undo Save
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="text-3xl font-bold mb-6 text-center">{{ category.name }}</h1>
+    <hr class="border-t-2 border-gray-200 mb-6">
+
+    {% include 'article/_article_item.html.twig' with {'articles': articles} %}
+{% endblock %}

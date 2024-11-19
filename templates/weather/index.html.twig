@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mx-auto p-6 bg-white shadow-lg rounded-lg max-w-lg">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800 text-center">Weather</h1>
+
+        <form action="{{ path('weather_index') }}" method="get" class="mb-6">
+            <input
+                    type="text"
+                    name="city"
+                    id="city-input"
+                    class="border p-2 rounded w-full"
+                    placeholder="Enter city name"
+                    value="{{ city }}"
+            />
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded mt-4 w-full">
+                Get Weather Information
+            </button>
+        </form>
+
+        {% if city %}
+            {% if error %}
+                <p class="text-center text-red-500">{{ error }}</p>
+            {% elseif weather %}
+                <div class="text-center">
+                    <p class="text-xl">🌡️ Temperature: {{ weather.main.temp }}°C</p>
+                    <p class="text-lg">☁️ Condition: {{ weather.weather[0].description | capitalize }}</p>
+                    <p class="text-lg">💨 Wind Speed: {{ weather.wind.speed }} m/s</p>
+                    <p class="text-lg">🌅 Sunrise: {{ weather.sys.sunrise | date('H:i') }}</p>
+                    <p class="text-lg">🌄 Sunset: {{ weather.sys.sunset | date('H:i') }}</p>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

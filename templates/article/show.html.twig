@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mx-auto p-6 bg-white shadow-md rounded-lg max-w-6xl relative">
+        <h1 class="text-3xl font-bold mb-6 mt-6 text-center">{{ article.title }}</h1>
+
+        <!-- Image -->
+        {% if article.image %}
+            <img src="{{ asset(article.image) }}" alt="Article Image" class="w-2/4 h-auto mt-6 rounded-md block mx-auto">
+        {% endif %}
+
+        <!-- Content -->
+        <div class="text-lg mt-6 mb-4 leading-relaxed">
+            <p>{{ article.content }}</p>
+        </div>
+
+        <!-- Author and Created Date -->
+        <div class="flex items-center mt-6">
+            <p class="text-sm text-gray-600">Author: {{ article.author }}</p>
+            <p class="text-sm text-gray-500 ml-4">Created: {{ article.createdAt|date('d.m.Y. H:i:s') }}</p>
+        </div>
+
+        <!-- Updated At (only show if it's not empty) -->
+        {% if article.updatedAt %}
+            <p class="text-sm text-gray-500 mt-2">Updated on: {{ article.updatedAt|date('d.m.Y., H:i:s') }}</p>
+        {% endif %}
+
+        <!-- Category (Top right corner of the article) -->
+        <p class="absolute top-0 right-0 text-sm text-gray-600 p-2">Category: {{ article.category.name }}</p>
+
+        <!-- Visible only if the user is logged in -->
+        {% if app.user %}
+
+            <!-- Like Button -->
+            <div class="flex items-center mt-4">
+                <!-- Thumbs Up and Like Count -->
+                <div id="like-section" class="flex items-center mr-4">
+                    <!-- Thumbs Up Icon -->
+                    <form action="{{ path('app_article_like', {'id': article.id}) }}" method="POST" class="mr-2">
+                        <button type="submit" id="like-button" class="bg-transparent border-none">
+                            <i id="thumbs-up-icon" class="fa fa-thumbs-up {% if article.isLikedByUser(app.user) %}text-green-500{% else %}text-gray-500{% endif %}" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                    <!-- Like Counter -->
+                    <span id="like-count">{{ article.getLikeCount() }}</span>
+
+                    <!-- Open the Like List Popup -->
+                    <button id="show-like-list" class="ml-2 text-blue-500">See who liked this</button>
+                </div>
+                <!-- Popup Modal -->
+                <div id="like-list-popup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                    <div class="bg-white p-4 rounded-lg w-1/3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-semibold">Users who liked this article</h3>
+                            <button id="close-popup" class="text-red-500">X</button>
+                        </div>
+                        <ul class="mt-4">
+                            {% for like in likes %}
+                                <li class="flex justify-between py-2">
+                                    <span>{{ like.user.username }}</span>
+                                    <span>{{ like.createdAt|date('d.m.Y., H:i:s') }}</span>
+                                </li>
+                            {% else %}
+                                <li>No one has liked this article yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Save/Undo Save Button -->
+                {% if article.isSavedByUser(app.user) %}
+                    <form action="{{ path('app_article_undo_save', {'id': article.id}) }}" method="POST">
+                        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">Undo Save</button>
+                    </form>
+                {% else %}
+                    <form action="{{ path('app_article_save', {'id': article.id}) }}" method="POST">
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save Article</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+
+
+        <!-- Comments Section -->
+        <div class="mt-8">
+            <h3 class="text-2xl font-semibold mb-4">Comments</h3>
+
+            {% if app.user %}
+                <div class="mt-6">
+                    <h4 class="text-xl font-semibold mb-4">Add a Comment</h4>
+                    {{ form_start(form) }}
+                    {{ form_row(form.content) }}
+                    <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Post Comment</button>
+                    {{ form_end(form) }}
+                </div>
+            {% endif %}
+
+            <!--Existing comments -->
+            <div class="mt-6">
+                {% for comment in article.comments %}
+                    <div class="p-4 border border-gray-300 mb-4 flex items-center justify-between relative">
+                        <div>
+                            <p class="font-semibold">{{ comment.author.username }}:</p>
+                            <p class="text-sm text-gray-500">{{ comment.createdAt|date('d.m.Y., H:i:s') }}</p>
+                            <p>{{ comment.content }}</p>
+                        </div>
+
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <form action="{{ path('app_comment_delete', {'id': comment.id}) }}" method="post">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete_comment' ~ comment.id) }}">
+                                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition">
+                                    Delete
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p>No comments yet. Be the first to comment!</p>
+                    {% if app.user is null %}
+                        <div class="flex items-center mt-4">
+                            <p class="mr-4">Only logged-in users can comment.</p>
+                            <div>
+                                <a href="{{ path('app_register') }}" class="px-4 py-2 bg-blue-500 text-white rounded mr-2">Register</a>
+                                <a href="{{ path('app_login') }}" class="px-4 py-2 bg-blue-500 text-white rounded">Login</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

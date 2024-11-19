@@ -1,0 +1,41 @@
+<div class="flex items-center justify-center">
+    <div class="container mx-auto p-6 bg-white shadow-md rounded-lg max-w-6xl">
+        <ul>
+            {% for article in articles %}
+                <li class="mb-4 p-4 border-b border-gray-300 relative">
+                    <!-- Article (Clickable link) -->
+                    <a href="{{ path('app_article_show', {'id': article.id}) }}" class="block">
+                        <!-- Title -->
+                        <h2 class="text-xl font-semibold text-center mb-4">Title: {{ article.title }}</h2>
+
+                        <!-- Image -->
+                        {% if article.image %}
+                            <img src="{{ asset(article.image) }}" alt="Article Image" class="w-2/4 h-auto mt-6 rounded-md block mx-auto">
+                        {% endif %}
+
+                        <!-- Content -->
+                        <div class="text-lg mt-6 mb-4 leading-relaxed">
+                            <p>{{ article.content }}</p>
+                        </div>
+
+                        <!-- Author and Created Date -->
+                        <div class="flex items-center mt-6">
+                            <p class="text-sm text-gray-600">Author: {{ article.author }}</p>
+                            <p class="text-sm text-gray-500 ml-4">Created: {{ article.createdAt|date('d.m.Y. H:i:s') }}</p>
+                        </div>
+
+                        <!-- Updated At (only show if it's not empty) -->
+                        {% if article.updatedAt %}
+                            <p class="text-sm text-gray-500 mt-2">Updated on: {{ article.updatedAt|date('d.m.Y., H:i:s') }}</p>
+                        {% endif %}
+
+                        <!-- Category (Bottom right) -->
+                        <p class="absolute top-0 right-0 text-sm text-gray-600">Category: {{ article.category.name }}</p>
+                    </a>
+                </li>
+            {% else %}
+                <li class="text-gray-500 text-center">No articles found.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
