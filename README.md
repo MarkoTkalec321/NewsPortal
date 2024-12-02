@@ -24,7 +24,6 @@ Full-stack application for showing, editing, deleting and posting news
 ![](github_images/10.png)
 
 ![](github_images/11.png)
-
 ### Technologies
 - **MySQL** relational database for storing data
 - Backend with **Symfony Framework** in **PHP**
